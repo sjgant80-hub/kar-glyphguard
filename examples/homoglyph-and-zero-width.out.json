@@ -1,0 +1,62 @@
+{
+  "exitCode": 1,
+  "report": {
+    "tool": "glyphguard",
+    "version": "1.0.0",
+    "inputHash": "c6d6394f672ad182f4ba91ded8bc153456859c660efc2a294dab36ddf618f10f",
+    "reportHash": "776d944176d263b55f4e08c55dfbf7db422ba5c8052d7ce233d9028d9474e355",
+    "report": {
+      "inputLength": 50,
+      "counts": {
+        "confusable": 1,
+        "invisible": 1,
+        "bidi": 0,
+        "hiddenTag": 0,
+        "mathAlnum": 0,
+        "fullwidth": 0,
+        "variationSelector": 0
+      },
+      "findings": [
+        {
+          "pos": 31,
+          "codepoint": "U+0430",
+          "char": "\u0430",
+          "category": "confusable",
+          "severity": "medium",
+          "detail": "CYRILLIC SMALL LETTER A (Cyrillic) looks like Latin \"a\""
+        },
+        {
+          "pos": 49,
+          "codepoint": "U+200B",
+          "char": "[invisible]",
+          "category": "invisible",
+          "severity": "low",
+          "detail": "ZERO WIDTH SPACE"
+        }
+      ],
+      "hiddenTagText": null,
+      "mathAlnumDecoded": null,
+      "fullwidthDecoded": null,
+      "mixedScriptTokens": [
+        {
+          "token": "secure-b\u0430nk.example",
+          "scripts": [
+            "Cyrillic",
+            "Latin",
+            "Other"
+          ]
+        }
+      ],
+      "normalization": {
+        "nfcChanged": false,
+        "nfkcChanged": false,
+        "nfcResult": null,
+        "nfkcResult": null
+      },
+      "verdict": {
+        "status": "flagged",
+        "highestSeverity": "medium"
+      }
+    }
+  }
+}

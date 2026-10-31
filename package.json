@@ -1,0 +1,21 @@
+{
+  "name": "kar-glyphguard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deterministic Unicode integrity auditor, no LLM judge: invisible characters, homoglyphs, bidi overrides, hidden tag text and styled letters, with a re-runnable hashed report.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "agensi": {
+    "asciiOutput": true
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test kernel.test.mjs skill.test.mjs",
+    "zip": "node make-zip.mjs",
+    "gate": "node gate.mjs --witness ../witness/witness.mjs",
+    "verify-receipt": "node gate.mjs --verify"
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "line": 174,
+    "mutation": "> → >=",
+    "snippet": "findings.forEach(function(f){ if (!highestSeverity || order[f.severity] > order[highestSev",
+    "reason": "Equivalent, and checked rather than argued. With >= the loop also reassigns highestSeverity when a finding has the SAME rank as the current highest, which writes the same severity string again; the value it ends on is unchanged. Verified by differential run: 200,000 random lists of 0-5 severities drawn from high/medium/low: the original and mutated loops end on the identical severity every time."
+  },
+  {
+    "line": 175,
+    "mutation": "> → >=",
+    "snippet": "if (mixedScriptTokens.length && (!highestSeverity || order.medium > order[highestSeverity]",
+    "reason": "Equivalent, and checked rather than argued. The mutant also assigns medium when the current highest severity is already medium, which writes the value it already holds; for high (3 vs 2) and low (1 vs 2) both comparisons agree. Verified by differential run over the same 200,000 random lists, each with and without mixed-script tokens: identical final severity every time."
+  }
+]

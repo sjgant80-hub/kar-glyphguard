@@ -1,0 +1,263 @@
+{
+  "exitCode": 1,
+  "report": {
+    "tool": "glyphguard",
+    "version": "1.0.0",
+    "inputHash": "2aa4062e0b88e730132866d217f09216014356d99e6b96562b97c45fcfbba6ce",
+    "reportHash": "565c828fbb18c9ec289136263d55afd19312d5ce46a3ce916300ada897e53897",
+    "report": {
+      "inputLength": 65,
+      "counts": {
+        "confusable": 0,
+        "invisible": 0,
+        "bidi": 0,
+        "hiddenTag": 28,
+        "mathAlnum": 0,
+        "fullwidth": 0,
+        "variationSelector": 0
+      },
+      "findings": [
+        {
+          "pos": 37,
+          "codepoint": "U+E006B",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"k\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 38,
+          "codepoint": "U+E0061",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"a\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 39,
+          "codepoint": "U+E0072",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"r\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 40,
+          "codepoint": "U+E002D",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"-\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 41,
+          "codepoint": "U+E0067",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"g\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 42,
+          "codepoint": "U+E006C",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"l\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 43,
+          "codepoint": "U+E0079",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"y\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 44,
+          "codepoint": "U+E0070",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"p\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 45,
+          "codepoint": "U+E0068",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"h\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 46,
+          "codepoint": "U+E0067",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"g\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 47,
+          "codepoint": "U+E0075",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"u\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 48,
+          "codepoint": "U+E0061",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"a\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 49,
+          "codepoint": "U+E0072",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"r\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 50,
+          "codepoint": "U+E0064",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"d\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 51,
+          "codepoint": "U+E0020",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \" \" (invisible in normal rendering)"
+        },
+        {
+          "pos": 52,
+          "codepoint": "U+E0074",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"t\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 53,
+          "codepoint": "U+E0065",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"e\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 54,
+          "codepoint": "U+E0073",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"s\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 55,
+          "codepoint": "U+E0074",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"t\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 56,
+          "codepoint": "U+E0020",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \" \" (invisible in normal rendering)"
+        },
+        {
+          "pos": 57,
+          "codepoint": "U+E0070",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"p\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 58,
+          "codepoint": "U+E0061",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"a\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 59,
+          "codepoint": "U+E0079",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"y\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 60,
+          "codepoint": "U+E006C",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"l\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 61,
+          "codepoint": "U+E006F",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"o\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 62,
+          "codepoint": "U+E0061",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"a\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 63,
+          "codepoint": "U+E0064",
+          "char": "[tag]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode tag character decodes to ASCII \"d\" (invisible in normal rendering)"
+        },
+        {
+          "pos": 64,
+          "codepoint": "U+E007F",
+          "char": "[tag-end]",
+          "category": "hidden-tag",
+          "severity": "high",
+          "detail": "Unicode CANCEL TAG (end of hidden tag sequence)"
+        }
+      ],
+      "hiddenTagText": [
+        "kar-glyphguard test payload"
+      ],
+      "mathAlnumDecoded": null,
+      "fullwidthDecoded": null,
+      "mixedScriptTokens": [],
+      "normalization": {
+        "nfcChanged": false,
+        "nfkcChanged": false,
+        "nfcResult": null,
+        "nfkcResult": null
+      },
+      "verdict": {
+        "status": "flagged",
+        "highestSeverity": "high"
+      }
+    }
+  }
+}

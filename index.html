@@ -213,6 +213,7 @@
 
   <footer>
     <p>Everything above runs in this browser tab. No accounts, no server, no network requests. View source for the full method — the code on this page is the spec.</p>
+    <p>Agents can run the same scan: <a href="https://github.com/sjgant80-hub/kar-glyphguard">source, agent skill and mutation receipt</a>. Powered by the Konomi architecture, created by Thomas Frumkin.</p>
   </footer>
 
 </div>
@@ -221,6 +222,7 @@
 (function(){
 "use strict";
 
+/* ==== KERNEL:BEGIN — the scanner itself; build.mjs copies this block byte-for-byte into kernel.mjs (tested, mutation-gated) and the Agensi skill script ==== */
 /* ============================== CORE (pure, deterministic) ============================== */
 
 var CONFUSABLES = {
@@ -421,6 +423,35 @@ function sha256Hex(str){
   });
 }
 
+// The export the page offers: the report plus the SHA-256 of the input text and of the canonical report.
+function makeReport(text){
+  var report = scan(text);
+  return Promise.all([sha256Hex(text), sha256Hex(stableStringify(report))]).then(function(hs){
+    return { tool:'glyphguard', version:'1.0.0', inputHash:hs[0], reportHash:hs[1], report:report };
+  });
+}
+
+// Re-run the scan on the text and compare with a pasted export: content, input hash, report hash.
+function verifyExport(text, exported){
+  if (!exported || typeof exported !== 'object' || !exported.report){
+    return Promise.resolve({ ok:false, notAnExport:true, contentMatches:false, inputHashMatches:null, reportHashSelfConsistent:null });
+  }
+  var recomputedCanon = stableStringify(scan(text));
+  var contentMatches = recomputedCanon === stableStringify(exported.report);
+  return Promise.all([sha256Hex(text), sha256Hex(recomputedCanon)]).then(function(hs){
+    var inputHashMatches = exported.inputHash ? (hs[0] === exported.inputHash) : null;
+    var reportHashSelfConsistent = exported.reportHash ? (hs[1] === exported.reportHash) : null;
+    return {
+      ok: contentMatches && inputHashMatches !== false && reportHashSelfConsistent !== false,
+      notAnExport: false,
+      contentMatches: contentMatches,
+      inputHashMatches: inputHashMatches,
+      reportHashSelfConsistent: reportHashSelfConsistent
+    };
+  });
+}
+/* ==== KERNEL:END ==== */
+
 /* ============================== UI WIRING ============================== */
 
 function $(id){ return document.getElementById(id); }
@@ -574,9 +605,8 @@ function runScan(text){
 
   $('inputHashOut').textContent = 'computing…';
   $('reportHashOut').textContent = 'computing…';
-  var canon = stableStringify(report);
-  Promise.all([sha256Hex(text), sha256Hex(canon)]).then(function(hs){
-    lastInputHash = hs[0]; lastReportHash = hs[1];
+  makeReport(text).then(function(exp){
+    lastInputHash = exp.inputHash; lastReportHash = exp.reportHash;
     $('inputHashOut').textContent = lastInputHash;
     $('reportHashOut').textContent = lastReportHash;
     var raw = $('rawJson');
@@ -691,18 +721,11 @@ $('verifyBtn').addEventListener('click', function(){
     return;
   }
 
-  var recomputed = scan(text);
-  var recomputedCanon = stableStringify(recomputed);
-  var claimedCanon = stableStringify(parsed.report);
-  var contentMatches = recomputedCanon === claimedCanon;
-
-  Promise.all([sha256Hex(text), sha256Hex(recomputedCanon)]).then(function(hs){
-    var recomputedInputHash = hs[0], recomputedReportHash = hs[1];
-    var inputHashMatches = parsed.inputHash ? (recomputedInputHash === parsed.inputHash) : null;
-    var reportHashSelfConsistent = parsed.reportHash ? (recomputedReportHash === parsed.reportHash) : null;
+  verifyExport(text, parsed).then(function(v){
+    var contentMatches = v.contentMatches, inputHashMatches = v.inputHashMatches, reportHashSelfConsistent = v.reportHashSelfConsistent;
 
     clear(banner);
-    var allGood = contentMatches && inputHashMatches !== false && reportHashSelfConsistent !== false;
+    var allGood = v.ok;
     if (allGood){
       banner.classList.add('ok');
       banner.appendChild(el('b', {text:'VERIFIED — re-running the scan on this text reproduces this report and hash exactly.'}));
