@@ -58,6 +58,10 @@ var MATH_STYLES = [
   [0x1D608,0x1D622],[0x1D63C,0x1D656],[0x1D670,0x1D68A]
 ];
 var MATH_DIGIT_STARTS = [0x1D7CE,0x1D7D8,0x1D7E2,0x1D7EC,0x1D7F6];
+// The rest of the block, between the last Latin style and the first digit style: the italic dotless i and j, the
+// Greek styles and two reserved points. Flagged as styled but not decoded (1.0.0 passed these as clean).
+var MATH_OTHER_LO = 0x1D6A4, MATH_OTHER_HI = 0x1D7CD;
+var VERSION = '1.1.0';
 
 function decodeMathAlnum(cp){
   for (var i=0;i<MATH_STYLES.length;i++){
@@ -142,6 +146,9 @@ function scan(text){
     if (mathCh !== null){
       findings.push({pos:i, codepoint:cpHex(cp), char:ch, category:'math-alnum', severity:'medium', detail:'Styled mathematical-alphanumeric character, decodes to plain "'+mathCh+'"'});
       counts.mathAlnum++; mathDecoded += mathCh; handled = true;
+    } else if (cp >= MATH_OTHER_LO && cp <= MATH_OTHER_HI){
+      findings.push({pos:i, codepoint:cpHex(cp), char:ch, category:'math-alnum', severity:'medium', detail:'Styled mathematical character (a Greek style or a dotless i or j), flagged but not decoded'});
+      counts.mathAlnum++; mathDecoded += ch;
     } else {
       mathDecoded += ch;
     }
@@ -209,7 +216,7 @@ function sha256Hex(str){
 function makeReport(text){
   var report = scan(text);
   return Promise.all([sha256Hex(text), sha256Hex(stableStringify(report))]).then(function(hs){
-    return { tool:'glyphguard', version:'1.0.0', inputHash:hs[0], reportHash:hs[1], report:report };
+    return { tool:'glyphguard', version:VERSION, inputHash:hs[0], reportHash:hs[1], report:report };
   });
 }
 
@@ -225,6 +232,8 @@ function verifyExport(text, exported){
     var reportHashSelfConsistent = exported.reportHash ? (hs[1] === exported.reportHash) : null;
     return {
       ok: contentMatches && inputHashMatches !== false && reportHashSelfConsistent !== false,
+      // a report from another version may differ for a reason that is not tampering: say which version made it
+      versionMatches: exported.version ? exported.version === VERSION : null,
       notAnExport: false,
       contentMatches: contentMatches,
       inputHashMatches: inputHashMatches,

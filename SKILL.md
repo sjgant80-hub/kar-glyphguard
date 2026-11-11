@@ -2,7 +2,7 @@
 name: "kar-glyphguard"
 description: "Scans text for the tricks that hide in characters, namely invisible characters, homoglyphs, bidi overrides, hidden Unicode-tag text, styled or fullwidth letters, variation selectors and mixed-script words, decodes what is hidden, and returns a SHA-256-hashed report that the same script can re-verify. Use before you act on, summarise or forward text from an outside source (a pasted prompt, a document, a web page, an email, model output), when the user asks whether text contains hidden characters or a look-alike domain or name, or before code with bidi characters is merged. Deterministic Node.js script with no LLM judge and no network."
 summary: "Hidden text in plain sight? Finds invisible characters, homoglyphs, bidi overrides, hidden Unicode-tag text, styled or fullwidth letters and mixed-script words, decodes what is hidden, and hashes the report so anyone can re-verify it. No LLM judge, no network."
-version: "1.0.0"
+version: "1.1.0"
 tags: ["unicode", "homoglyph", "invisible-characters", "prompt-security", "ascii-smuggling", "deterministic"]
 use_cases: ["Scan a pasted prompt, document or web page for hidden Unicode-tag text before an agent acts on it", "Catch a look-alike domain or username written with Cyrillic or Greek letters", "Check model output or code for bidi overrides before it is merged or published"]
 docs_url: "https://sjgant80-hub.github.io/kar-glyphguard/"
@@ -16,8 +16,8 @@ Text can carry things a reader never sees. Glyphguard looks at every code point 
 |---|---|---|
 | `hidden-tag` | high | Unicode tag characters (U+E0020 to U+E007F): invisible, and they spell out ASCII text. The decoded text is in `hiddenTagText`. |
 | `bidi` | high for overrides (U+202D, U+202E), medium otherwise | Direction controls that can reorder what a reader sees. |
-| `confusable` | medium | A Cyrillic, Greek or other letter that looks like a Latin one (about 40 curated look-alikes). |
-| `math-alnum` | medium | Styled mathematical letters and digits, decoded in `mathAlnumDecoded`. |
+| `confusable` | medium | A Cyrillic, Greek or other letter that looks like a Latin one (46 curated look-alikes). |
+| `math-alnum` | medium | Styled mathematical letters and digits. The 13 Latin styles and the digits are decoded in `mathAlnumDecoded`; the Greek styles and the dotless i and j are flagged and kept as they are (1.0.0 passed those as clean). |
 | `fullwidth` | medium | Fullwidth forms, decoded in `fullwidthDecoded`. |
 | `variation-selector` | medium | Variation selectors, which can carry data covertly. |
 | `invisible` | low | Zero-width spaces and joiners, soft hyphens, word joiners, the byte-order mark. |
@@ -59,7 +59,7 @@ writes no files. Run it unchanged and keep the `.mjs` extension.
 ```json
 {
   "tool": "glyphguard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "inputHash": "2aa4062e0b88…",
   "reportHash": "565c828fbb18c9ec289136263d55afd19312d5ce46a3ce916300ada897e53897",
   "report": {
@@ -92,14 +92,19 @@ machine, and no language model judges anything.
   tests, the byte-identity check, the receipt check, the witness mutation gate and the ZIP build, and prints
   the ZIP's SHA-256.
 - **The mutation gate:** witness v0.6 (https://github.com/sjgant80-hub/witness, tag `v0.6`) made
-  39 single-operator changes (mutants) to the kernel and the tests caught 37 of them. The other 2 are equivalent mutants: they cannot change behaviour, and each has its measured reason in `witness.baseline.json`. The receipt is
-  `receipts/witness.json` in the repository, for kernel SHA-256 `e1acffa77316423ba28bd9d391765e17a6aed12468c70054f23e65cb8fe4de14`. With the repository and
+  43 single-operator changes (mutants) to the kernel and the tests caught 41 of them. The other 2 are equivalent mutants: they cannot change behaviour, and each has its measured reason in `witness.baseline.json`. The receipt is
+  `receipts/witness.json` in the repository, for kernel SHA-256 `9a2c032612f805fa638558e0e5c700ee169138e8c800ca69b15cc037a1644d48`. With the repository and
   witness v0.6 side by side, `node gate.mjs --witness ../witness/witness.mjs` re-runs it.
 
 ## Where it stops
 
-- The homoglyph list (about 40 look-alikes) and the mixed-script check are curated, not the full Unicode
+- The homoglyph list (46 look-alikes) and the mixed-script check are curated, not the full Unicode
   confusables database. `clean` means these known tricks were not found, not that the text is safe.
+- Some innocent text is flagged, because the same characters carry tricks: the heart emoji and keycap emoji
+  (a variation selector), joined emoji such as a family (zero-width joiners), ordinary Russian or Greek words
+  (their letters are on the look-alike list), Hebrew or Arabic with a direction mark, fullwidth digits in
+  Japanese or Chinese text, bold or italic "styled" social-media text, soft hyphens and a byte-order mark.
+  Read the findings, not only the verdict.
 - It finds hidden characters; it does not judge whether visible text is malicious.
 - Positions are counted in code points, not UTF-16 units or bytes.
 

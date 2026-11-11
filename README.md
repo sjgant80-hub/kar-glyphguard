@@ -10,7 +10,7 @@ can reproduce exactly — with a live self-test that proves the tamper-detection
 
 One self-contained HTML file — no backend, no network, nothing sent anywhere, runs in your browser.
 
-**Honest limit:** the homoglyph list (~40 entries) and mixed-script heuristic are curated, not the full
+**Honest limit:** the homoglyph list (46 entries) and mixed-script heuristic are curated, not the full
 Unicode Confusables database. "Clean" means these specific known tricks weren't found — not that the text
 is safe.
 
@@ -31,8 +31,8 @@ upload for the Agensi skill marketplace. CI builds the same ZIP on every push an
   byte-for-byte into `kernel.mjs` and into the skill script; CI fails if the three ever differ.
 - **Tests:** `npm test` runs the kernel tests, and runs the skill script alone in an empty folder, the way
   Agensi runs it, against the expected outputs in `examples/`.
-- **Mutation gate:** witness v0.6 made 39 single-operator mutants of `kernel.mjs` and the tests caught
-  37; the other 2 are equivalent mutants, reasons in `witness.baseline.json`. Receipt: `receipts/witness.json` (kernel SHA-256 `e1acffa77316423b…`).
+- **Mutation gate:** witness v0.6 made 43 single-operator mutants of `kernel.mjs` and the tests caught
+  41; the other 2 are equivalent mutants, reasons in `witness.baseline.json`. Receipt: `receipts/witness.json` (kernel SHA-256 `9a2c032612f8…`).
   CI re-runs the gate on every push: https://github.com/sjgant80-hub/kar-glyphguard/actions/workflows/ci.yml
 
 Powered by the Konomi architecture, created by Thomas Frumkin. MIT licence (see `LICENSE`).

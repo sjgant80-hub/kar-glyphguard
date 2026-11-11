@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import {
   CONFUSABLES, INVISIBLE, BIDI, BIDI_HIGH_RISK, decodeMathAlnum, scriptOf, TAG_LO, TAG_HI, TAG_CANCEL, isVarSel, isFullwidth,
-  stableStringify, cpHex, scan, sha256Hex, makeReport, verifyExport,
+  stableStringify, cpHex, scan, sha256Hex, makeReport, verifyExport, VERSION, MATH_OTHER_LO, MATH_OTHER_HI,
 } from './kernel.mjs';
 
 const nodeSha = (s) => createHash('sha256').update(s, 'utf8').digest('hex');
@@ -107,6 +107,27 @@ test('scan: a mixed-script word with no other finding still raises the severity 
   assert.equal(high.verdict.highestSeverity, 'high');
 });
 
+test('scan: styled Greek letters and the dotless i and j are flagged, not passed as clean (1.0.0 missed them)', () => {
+  assert.equal(MATH_OTHER_LO, 0x1D6A4);                 // MATHEMATICAL ITALIC SMALL DOTLESS I, first after the Latin styles
+  assert.equal(MATH_OTHER_HI, 0x1D7CD);                 // the reserved point just before MATHEMATICAL BOLD DIGIT ZERO
+  for (const cp of [0x1D6A4, 0x1D6A5, 0x1D6C2, 0x1D7CB, 0x1D7CD]) {   // both edges, BOLD SMALL ALPHA, BOLD SMALL DIGAMMA
+    const r = scan('x' + String.fromCodePoint(cp) + 'y');
+    assert.equal(r.counts.mathAlnum, 1, cp.toString(16));
+    assert.deepEqual(r.verdict, { status: 'flagged', highestSeverity: 'medium' });
+    assert.deepEqual(r.findings, [{ pos: 1, codepoint: cpHex(cp), char: String.fromCodePoint(cp), category: 'math-alnum', severity: 'medium',
+      detail: 'Styled mathematical character (a Greek style or a dotless i or j), flagged but not decoded' }]);
+    assert.equal(r.mathAlnumDecoded, 'x' + String.fromCodePoint(cp) + 'y');   // kept as it is, never guessed
+  }
+  // the neighbours on each side are the decoded runs, and the block's edges are not widened
+  assert.equal(scan(String.fromCodePoint(0x1D6A3)).findings[0].detail, 'Styled mathematical-alphanumeric character, decodes to plain "z"');
+  assert.equal(scan(String.fromCodePoint(0x1D7CE)).findings[0].detail, 'Styled mathematical-alphanumeric character, decodes to plain "0"');
+  assert.equal(scan(String.fromCodePoint(0x1D800)).verdict.status, 'clean');   // SIGNWRITING, outside the block
+  assert.equal(scan('α').counts.mathAlnum, 0);          // a plain Greek alpha is not styled
+  // the page and SKILL.md say 46 look-alikes, 24 Cyrillic, 19 Greek, 2 Latin, 1 letter-like: pinned here
+  const by = {}; for (const v of Object.values(CONFUSABLES)) by[v[2]] = (by[v[2]] || 0) + 1;
+  assert.deepEqual(by, { Cyrillic: 24, Greek: 19, Latin: 2, Letterlike: 1 });
+});
+
 test('scan: styled and fullwidth letters are decoded to plain text', () => {
   const r = scan('\u{1D407}i \uFF21b');               // MATHEMATICAL BOLD CAPITAL H, i, space, FULLWIDTH A, b
   assert.equal(r.counts.mathAlnum, 1);
@@ -132,7 +153,8 @@ test('makeReport: the export the page offers, with both hashes', async () => {
   const text = 'a\u200Bb';
   const exp = await makeReport(text);
   assert.equal(exp.tool, 'glyphguard');
-  assert.equal(exp.version, '1.0.0');
+  assert.equal(exp.version, '1.1.0');
+  assert.equal(VERSION, '1.1.0');
   assert.deepEqual(exp.report, scan(text));
   assert.equal(exp.inputHash, nodeSha(text));
   assert.equal(exp.reportHash, nodeSha(stableStringify(scan(text))));
@@ -142,22 +164,26 @@ test('verifyExport: a genuine export verifies; any edit, or the wrong text, does
   const text = 'secure-b\u0430nk.example';
   const exp = await makeReport(text);
   assert.deepEqual(await verifyExport(text, exp),
-    { ok: true, notAnExport: false, contentMatches: true, inputHashMatches: true, reportHashSelfConsistent: true });
+    { ok: true, notAnExport: false, contentMatches: true, inputHashMatches: true, reportHashSelfConsistent: true, versionMatches: true });
   const edited = JSON.parse(JSON.stringify(exp));
   edited.report.counts.confusable = 0;
   assert.deepEqual(await verifyExport(text, edited),
-    { ok: false, notAnExport: false, contentMatches: false, inputHashMatches: true, reportHashSelfConsistent: true });
+    { ok: false, notAnExport: false, contentMatches: false, inputHashMatches: true, reportHashSelfConsistent: true, versionMatches: true });
   const noHashes = { report: edited.report };
   assert.deepEqual(await verifyExport(text, noHashes),
-    { ok: false, notAnExport: false, contentMatches: false, inputHashMatches: null, reportHashSelfConsistent: null });
+    { ok: false, notAnExport: false, contentMatches: false, inputHashMatches: null, reportHashSelfConsistent: null, versionMatches: null });
   assert.equal((await verifyExport(text, { report: exp.report })).ok, true);
   const wrongInput = { ...exp, inputHash: '0'.repeat(64) };
   assert.deepEqual(await verifyExport(text, wrongInput),
-    { ok: false, notAnExport: false, contentMatches: true, inputHashMatches: false, reportHashSelfConsistent: true });
+    { ok: false, notAnExport: false, contentMatches: true, inputHashMatches: false, reportHashSelfConsistent: true, versionMatches: true });
   const wrongReportHash = { ...exp, reportHash: '0'.repeat(64) };
   assert.equal((await verifyExport(text, wrongReportHash)).reportHashSelfConsistent, false);
   assert.equal((await verifyExport(text, wrongReportHash)).ok, false);
   assert.equal((await verifyExport('other text', exp)).ok, false);
+  // a report made by another version says so; the version alone does not decide ok
+  const older = { ...exp, version: '1.0.0' };
+  assert.equal((await verifyExport(text, older)).versionMatches, false);
+  assert.equal((await verifyExport(text, older)).ok, true);
 });
 
 test('verifyExport never throws: anything that is not an export is reported as such', async () => {
